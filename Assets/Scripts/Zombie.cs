@@ -4,6 +4,10 @@ using System.Collections;
 
 public class Zombie : Entity
 {
+    public delegate void ZombieDeath();
+    public static event ZombieDeath Dead;
+
+
     public string name;
     public float maxhp;
     public float damage;
@@ -11,6 +15,16 @@ public class Zombie : Entity
 	// Use this for initialization
 
     public GameObject target;
+
+    void OnEnable()
+    {
+        Player.Dead += Death;
+    }
+
+    void OnDisable()
+    {
+        Player.Dead -= Death;
+    }
 
     public override void Awake()
     {
@@ -20,6 +34,14 @@ public class Zombie : Entity
 
         base.Awake();
 
+    }
+
+    public override void Death()
+    {
+        if (Dead != null)
+            Dead();
+
+        base.Death();
     }
 
     public void OnTriggerEnter2D(Collider2D otherCollider)

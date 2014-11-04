@@ -7,10 +7,24 @@ public class ZombieSpawner : MonoBehaviour
     public Transform zombie;
     public float spawnTime;
     public float spawnTimeRandom;
-    public float spawnTimer;
+    private float spawnTimer;
+
+    private bool canSpawn;
+
+    void OnEnable()
+    {
+        Player.Dead += StopSpawning;
+    }
+
+    void OnDisable()
+    {
+        Player.Dead -= StopSpawning;
+    }
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+	{
+	    canSpawn = true;
         ResetSpawnTimer();
 	
 	}
@@ -18,13 +32,16 @@ public class ZombieSpawner : MonoBehaviour
 	// Update is called once per frame
 	void Update () {
 
-        spawnTimer -= Time.deltaTime;
-        if (spawnTimer <= 0.0f)
-        {
-            Instantiate(zombie, transform.position, Quaternion.identity);
-            ResetSpawnTimer();
-        }
-	
+	    if (canSpawn)
+	    {
+	        spawnTimer -= Time.deltaTime;
+	        if (spawnTimer <= 0.0f)
+	        {
+	            Instantiate(zombie, transform.position, Quaternion.identity);
+	            ResetSpawnTimer();
+	        }
+	    }
+
 	}
 
     void ResetSpawnTimer()
@@ -32,4 +49,8 @@ public class ZombieSpawner : MonoBehaviour
         spawnTimer = (float)(spawnTime + Random.Range(0, spawnTimeRandom * 100) / 100.0);
     }
 
+    void StopSpawning()
+    {
+        canSpawn = false;
+    }
 }
